@@ -1,0 +1,10 @@
+[
+    {
+        "result": "Error",
+        "expression": "1-2"
+    },
+    {
+        "result": "Error",
+        "expression": "Error8/4"
+    }
+]
