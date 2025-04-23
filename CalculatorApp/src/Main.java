@@ -1,8 +1,18 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 package src;
 
 import ui.CalculatorUI;
+=======
+package src;
+
+import ui.CalculatorUI;
+import utils.VisualMoveButtonApp;
+
+import javax.swing.SwingUtilities;
+
+>>>>>>> MT-6
 import history.HistoryManager;
 
 public class Main {
@@ -10,6 +20,7 @@ public class Main {
         HistoryManager historyManager = new HistoryManager();
         CalculatorUI calculatorUI = new CalculatorUI(historyManager);
         calculatorUI.setVisible(true);
+<<<<<<< HEAD
 =======
 import ui.AdvancedCalculatorUI;
 public class Main {
@@ -31,3 +42,13 @@ public class Main {
 }
 
 >>>>>>> MT-5
+=======
+  
+        SwingUtilities.invokeLater(() -> new VisualMoveButtonApp());
+      
+    
+
+
+    }
+}
+>>>>>>> MT-6

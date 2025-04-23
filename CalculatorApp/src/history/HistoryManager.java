@@ -1,5 +1,6 @@
 package history;
 
+<<<<<<< HEAD
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -7,10 +8,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+=======
+>>>>>>> MT-6
 import java.util.ArrayList;
 import java.util.List;
 
 public class HistoryManager {
+<<<<<<< HEAD
 
     private static final String HISTORY_FILE = "calculator_history.json";
     private JSONArray history;
@@ -42,11 +46,36 @@ public class HistoryManager {
             String result = entry.optString("result", "");
             if (expr.contains(keyword) || result.contains(keyword)) {
                 results.add(expr + " = " + result);
+=======
+    private List<String> history;
+
+    public HistoryManager() {
+        history = new ArrayList<>();
+    }
+
+    // Thêm lịch sử vào danh sách
+    public void addHistory(String expression, String result) {
+        history.add(expression + " = " + result);
+    }
+
+    // Lấy danh sách lịch sử
+    public List<String> getHistory() {
+        return history;
+    }
+
+    // Tìm kiếm lịch sử theo từ khoá
+    public List<String> searchHistory(String keyword) {
+        List<String> results = new ArrayList<>();
+        for (String entry : history) {
+            if (entry.contains(keyword)) {
+                results.add(entry);
+>>>>>>> MT-6
             }
         }
         return results;
     }
 
+<<<<<<< HEAD
     public List<String> getHistory() {
         List<String> historyList = new ArrayList<>();
         for (int i = 0; i < history.length(); i++) {
@@ -81,6 +110,12 @@ public class HistoryManager {
             writer.write(history.toString(4));
         } catch (IOException e) {
             e.printStackTrace();
+=======
+    // Xóa lịch sử tại chỉ mục nhất định
+    public void deleteHistoryAt(int index) {
+        if (index >= 0 && index < history.size()) {
+            history.remove(index);
+>>>>>>> MT-6
         }
     }
 }
