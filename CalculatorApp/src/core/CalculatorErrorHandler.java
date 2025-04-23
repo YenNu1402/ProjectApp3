@@ -2,187 +2,107 @@ package core;
 
 public class CalculatorErrorHandler {
 
-    /**
-     * Kiểm tra và xử lý lỗi cho các phép toán cơ bản (+, -, *, /, %, ^, logab).
-     * @param a Số thứ nhất
-     * @param b Số thứ hai
-     * @param operator Toán tử
-     * @return Thông báo lỗi nếu có, hoặc null nếu không có lỗi
-     */
     public static String checkBasicOperationError(double a, double b, String operator) {
         if (!Double.isFinite(a) || !Double.isFinite(b)) {
-            return "Input out of range";
+            return "Math ERROR";
         }
 
         switch (operator) {
             case "/":
-                if (b == 0) {
-                    return "Cannot divide by zero";
-                }
+                if (Math.abs(b) < 1e-10) return "Math ERROR: Divide by zero";
                 break;
             case "%":
-                if (b == 0) {
-                    return "Cannot modulo by zero";
-                }
+                if (Math.abs(b) < 1e-10 && !operator.equals("%")) return "Math ERROR: Modulo by zero";
                 break;
             case "^":
-                if (a == 0 && b <= 0) {
-                    return "Zero raised to non-positive power undefined";
-                }
-                double result = Math.pow(a, b);
-                if (!Double.isFinite(result)) {
-                    return "Result out of range";
-                }
+                if (a == 0 && b <= 0) return "Math ERROR: Undefined";
+                if (!Double.isFinite(Math.pow(a, b))) return "Math ERROR: Out of range";
                 break;
             case "logab":
-                if (a <= 0 || a == 1) {
-                    return "Invalid base for logarithm";
-                }
-                if (b <= 0) {
-                    return "Logarithm undefined for non-positive number";
-                }
+                if (a <= 0 || Math.abs(a - 1) < 1e-10) return "Math ERROR: Invalid base";
+                if (b <= 0) return "Math ERROR: Invalid argument";
                 break;
             default:
-                if (!operator.matches("[+\\-*/%^]")) {
-                    return "Invalid operator";
-                }
+                if (!operator.matches("[+\\-*/%^]")) return "Syntax ERROR: Invalid operator";
         }
         return null;
     }
 
-    /**
-     * Kiểm tra lỗi cho các hàm lượng giác (sin, cos, tan, cot).
-     * @param func Hàm lượng giác
-     * @param angle Góc đầu vào
-     * @return Thông báo lỗi nếu có, hoặc null nếu không có lỗi
-     */
     public static String checkTrigonometricError(String func, double angle) {
-        if (!Double.isFinite(angle)) {
-            return "Input out of range";
-        }
+        if (!Double.isFinite(angle)) return "Math ERROR: Invalid angle";
 
         switch (func) {
             case "sin":
             case "cos":
-                return null; // sin và cos luôn hợp lệ với số thực
+                return null;
             case "tan":
-                double tanVal = Math.tan(angle);
-                if (!Double.isFinite(tanVal)) {
-                    return "Tangent undefined";
-                }
+                if (Math.abs(Math.cos(angle)) < 1e-10) return "Math ERROR: Undefined";
                 break;
             case "cot":
-                double cotVal = Math.tan(angle);
-                if (cotVal == 0) {
-                    return "Cotangent undefined";
-                }
+                if (Math.abs(Math.sin(angle)) < 1e-10) return "Math ERROR: Undefined";
                 break;
             default:
-                return "Invalid trigonometric function";
+                return "Syntax ERROR: Unknown function";
         }
         return null;
     }
 
-    /**
-     * Kiểm tra lỗi cho phép tính giai thừa.
-     * @param n Số cần tính giai thừa
-     * @return Thông báo lỗi nếu có, hoặc null nếu không có lỗi
-     */
     public static String checkFactorialError(double n) {
-        if (!Double.isFinite(n)) {
-            return "Number too large for factorial";
-        }
-        if (n < 0) {
-            return "Cannot compute factorial of negative number";
-        }
-        if (n > 20) {
-            return "Factorial too large";
-        }
-        if (n != Math.floor(n)) {
-            return "Factorial only defined for integers";
-        }
+        if (!Double.isFinite(n)) return "Math ERROR: Out of range";
+        if (n < 0) return "Math ERROR: Negative not allowed";
+        if (n > 69) return "Math ERROR: Too large";
+        if (Math.abs(n - Math.floor(n)) > 1e-10) return "Math ERROR: Requires integer";
         return null;
     }
 
-    /**
-     * Kiểm tra lỗi cho phép tính căn bậc hai.
-     * @param number Số cần tính căn bậc hai
-     * @return Thông báo lỗi nếu có, hoặc null nếu không có lỗi
-     */
     public static String checkSquareRootError(double number) {
-        if (!Double.isFinite(number)) {
-            return "Input out of range";
-        }
-        if (number < 0) {
-            return "Cannot take square root of negative number";
-        }
+        if (!Double.isFinite(number)) return "Math ERROR: Out of range";
+        if (number < 0) return "Math ERROR: Negative not allowed";
         return null;
     }
 
-    /**
-     * Kiểm tra lỗi cho hàm logarit (log10, ln).
-     * @param number Số cần tính logarit
-     * @return Thông báo lỗi nếu có, hoặc null nếu không có lỗi
-     */
     public static String checkLogarithmError(double number) {
-        if (!Double.isFinite(number)) {
-            return "Input out of range";
-        }
-        if (number <= 0) {
-            return "Logarithm undefined for non-positive number";
-        }
+        if (!Double.isFinite(number)) return "Math ERROR: Out of range";
+        if (number <= 0) return "Math ERROR: Non-positive not allowed";
         return null;
     }
 
-    /**
-     * Kiểm tra lỗi cho phép tính nghịch đảo (1/x).
-     * @param number Số cần tính nghịch đảo
-     * @return Thông báo lỗi nếu có, hoặc null nếu không có lỗi
-     */
     public static String checkInverseError(double number) {
-        if (!Double.isFinite(number)) {
-            return "Input out of range";
-        }
-        if (number == 0) {
-            return "Cannot divide by zero";
-        }
+        if (!Double.isFinite(number)) return "Math ERROR: Out of range";
+        if (Math.abs(number) < 1e-10) return "Math ERROR: Divide by zero";
         return null;
     }
 
-    /**
-     * Kiểm tra lỗi cho biểu thức đầu vào (ví dụ: "5++2", "++").
-     * @param expression Biểu thức cần kiểm tra
-     * @return Thông báo lỗi nếu có, hoặc null nếu không có lỗi
-     */
     public static String checkExpressionError(String expression) {
-        if (expression == null || expression.trim().isEmpty()) {
-            return "Empty expression";
+        if (expression == null || expression.trim().isEmpty()) return "Syntax ERROR: Empty";
+
+        // Check for invalid consecutive operators (excluding unary minus)
+        if (expression.matches(".*[+*/%^]{2,}.*") || expression.matches(".*\\-\\s*[+*/%^].*")) {
+            return "Syntax ERROR: Invalid operators";
         }
 
-        // Kiểm tra các toán tử liên tiếp (ví dụ: "5++2")
-        if (expression.matches(".*[+\\-*/%^]{2,}.*")) {
-            return "Invalid expression: consecutive operators";
+        // Allow starting with minus for negative numbers
+        if (expression.trim().matches(".*[+*/%^]$")) {
+            return "Syntax ERROR: Invalid position";
         }
 
-        // Kiểm tra biểu thức bắt đầu hoặc kết thúc bằng toán tử
-        if (expression.trim().matches("^[+\\-*/%^].*") || expression.trim().matches(".*[+\\-*/%^]$")) {
-            return "Invalid expression: starts or ends with operator";
-        }
-
-        // Kiểm tra định dạng số hợp lệ
+        // Basic expression validation
         try {
-            String[] parts = expression.split(" ");
-            if (parts.length == 3 && parts[1].matches("[+\\-*/%^]")) {
-                Double.parseDouble(parts[0].trim());
-                Double.parseDouble(parts[2].trim());
-            } else if (parts.length == 1) {
-                Double.parseDouble(parts[0].trim());
+            String evalExpression = expression.replace("π", String.valueOf(Math.PI))
+                                             .replace("e", String.valueOf(Math.E));
+            String[] parts = evalExpression.trim().split("\\s+");
+            if (parts.length == 1) {
+                Double.parseDouble(parts[0]);
+            } else if (parts.length == 3 && parts[1].matches("[+\\-*/%^]")) {
+                Double.parseDouble(parts[0]);
+                Double.parseDouble(parts[2]);
             } else {
-                return "Invalid expression format";
+                return "Syntax ERROR: Malformed";
             }
-            return null;
         } catch (NumberFormatException e) {
-            return "Invalid number format";
+            return "Math ERROR: Invalid number";
         }
+
+        return null;
     }
 }
