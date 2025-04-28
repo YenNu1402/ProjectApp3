@@ -1,20 +1,21 @@
 package utils;
-import javax.swing.*;
+
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
 
 public class VisualMoveButtonApp {
     private int xPos = 150; // Vị trí ban đầu của hình chữ nhật
+    private JFrame frame;
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new VisualMoveButtonApp().createAndShowGUI());
+    public void show() {
+        createAndShowGUI();
     }
 
     private void createAndShowGUI() {
-        JFrame frame = new JFrame("Di Chuyển Trái Phải");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame = new JFrame("Move Rectangle");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Đóng cửa sổ này mà không thoát ứng dụng
         frame.setSize(400, 300);
+        frame.setLocationRelativeTo(null);
 
         JPanel panel = new JPanel() {
             @Override
@@ -25,23 +26,17 @@ public class VisualMoveButtonApp {
             }
         };
 
-        JButton leftButton = new JButton("Trái");
-        JButton rightButton = new JButton("Phải");
+        JButton leftButton = new JButton("Left");
+        JButton rightButton = new JButton("Right");
 
-        leftButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                xPos -= 10; // Di chuyển sang trái
-                panel.repaint(); // Vẽ lại giao diện
-            }
+        leftButton.addActionListener(e -> {
+            xPos -= 10; // Di chuyển sang trái
+            panel.repaint();
         });
 
-        rightButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                xPos += 10; // Di chuyển sang phải
-                panel.repaint(); // Vẽ lại giao diện
-            }
+        rightButton.addActionListener(e -> {
+            xPos += 10; // Di chuyển sang phải
+            panel.repaint();
         });
 
         JPanel buttonPanel = new JPanel();
@@ -53,4 +48,3 @@ public class VisualMoveButtonApp {
         frame.setVisible(true);
     }
 }
-

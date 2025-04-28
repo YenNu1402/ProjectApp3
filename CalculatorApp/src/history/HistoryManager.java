@@ -1,121 +1,135 @@
 package history;
 
-<<<<<<< HEAD
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-=======
->>>>>>> MT-6
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class HistoryManager {
-<<<<<<< HEAD
-
     private static final String HISTORY_FILE = "calculator_history.json";
+    private static final int MAX_HISTORY_SIZE = 100;
+    private static final Logger LOGGER = Logger.getLogger(HistoryManager.class.getName());
     private JSONArray history;
+    private final Object lock = new Object();
 
     public HistoryManager() {
         history = loadHistory();
     }
 
     public void addHistory(String expression, String result) {
-        JSONObject entry = new JSONObject();
-        entry.put("expression", expression);
-        entry.put("result", result);
-        history.put(entry);
-        saveHistory();
+        synchronized (lock) {
+            JSONObject entry = new JSONObject();
+            entry.put("expression", expression);
+            entry.put("result", result);
+            entry.put("timestamp", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+            history.put(entry);
+
+            while (history.length() > MAX_HISTORY_SIZE) {
+                history.remove(0);
+            }
+
+            saveHistory();
+        }
+    }
+
+    public List<String> getHistory() {
+        synchronized (lock) {
+            List<String> historyList = new ArrayList<>();
+            for (int i = 0; i < history.length(); i++) {
+                JSONObject entry = history.getJSONObject(i);
+                String expr = entry.optString("expression", "N/A");
+                String result = entry.optString("result", "N/A");
+                String timestamp = entry.optString("timestamp", "Unknown");
+                historyList.add(String.format("%s = %s (%s)", expr, result, timestamp));
+            }
+            return historyList;
+        }
     }
 
     public void deleteHistoryAt(int index) {
-        if (index >= 0 && index < history.length()) {
-            history.remove(index);
+        synchronized (lock) {
+            if (index >= 0 && index < history.length()) {
+                JSONArray newHistory = new JSONArray();
+                for (int i = 0; i < history.length(); i++) {
+                    if (i != index) {
+                        newHistory.put(history.getJSONObject(i));
+                    }
+                }
+                history = newHistory;
+                saveHistory();
+            }
+        }
+    }
+
+    public void clearHistory() {
+        synchronized (lock) {
+            history = new JSONArray();
             saveHistory();
         }
     }
 
     public List<String> searchHistory(String keyword) {
-        List<String> results = new ArrayList<>();
-        for (int i = 0; i < history.length(); i++) {
-            JSONObject entry = history.getJSONObject(i);
-            String expr = entry.optString("expression", "");
-            String result = entry.optString("result", "");
-            if (expr.contains(keyword) || result.contains(keyword)) {
-                results.add(expr + " = " + result);
-=======
-    private List<String> history;
-
-    public HistoryManager() {
-        history = new ArrayList<>();
-    }
-
-    // Thêm lịch sử vào danh sách
-    public void addHistory(String expression, String result) {
-        history.add(expression + " = " + result);
-    }
-
-    // Lấy danh sách lịch sử
-    public List<String> getHistory() {
-        return history;
-    }
-
-    // Tìm kiếm lịch sử theo từ khoá
-    public List<String> searchHistory(String keyword) {
-        List<String> results = new ArrayList<>();
-        for (String entry : history) {
-            if (entry.contains(keyword)) {
-                results.add(entry);
->>>>>>> MT-6
+        synchronized (lock) {
+            List<String> results = new ArrayList<>();
+            String lowerKeyword = keyword.toLowerCase();
+            for (int i = 0; i < history.length(); i++) {
+                JSONObject entry = history.getJSONObject(i);
+                String expr = entry.optString("expression", "").toLowerCase();
+                String result = entry.optString("result", "").toLowerCase();
+                String timestamp = entry.optString("timestamp", "").toLowerCase();
+                if (expr.contains(lowerKeyword) || result.contains(lowerKeyword) || timestamp.contains(lowerKeyword)) {
+                    results.add(String.format("%s = %s (%s)",
+                            entry.getString("expression"),
+                            entry.getString("result"),
+                            entry.getString("timestamp")));
+                }
             }
+            return results;
         }
-        return results;
-    }
-
-<<<<<<< HEAD
-    public List<String> getHistory() {
-        List<String> historyList = new ArrayList<>();
-        for (int i = 0; i < history.length(); i++) {
-            JSONObject entry = history.getJSONObject(i);
-            historyList.add(entry.getString("expression") + " = " + entry.getString("result"));
-        }
-        return historyList;
     }
 
     private JSONArray loadHistory() {
-        try {
-            File file = new File(HISTORY_FILE);
-            if (!file.exists()) {
-                file.createNewFile();
+        synchronized (lock) {
+            try {
+                File file = new File(HISTORY_FILE);
+                if (!file.exists()) {
+                    LOGGER.info("History file not found, creating new one: " + HISTORY_FILE);
+                    file.createNewFile();
+                    return new JSONArray();
+                }
+
+                String content = new String(Files.readAllBytes(file.toPath())).trim();
+                if (content.isEmpty()) {
+                    return new JSONArray();
+                }
+
+                return new JSONArray(content);
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Error loading history file: " + HISTORY_FILE, e);
+                return new JSONArray();
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error parsing JSON from history file: " + HISTORY_FILE, e);
                 return new JSONArray();
             }
-
-            String content = new String(Files.readAllBytes(file.toPath())).trim();
-            if (content.isEmpty()) {
-                return new JSONArray();
-            }
-
-            return new JSONArray(content);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new JSONArray();
         }
     }
 
     private void saveHistory() {
-        try (FileWriter writer = new FileWriter(HISTORY_FILE)) {
-            writer.write(history.toString(4));
-        } catch (IOException e) {
-            e.printStackTrace();
-=======
-    // Xóa lịch sử tại chỉ mục nhất định
-    public void deleteHistoryAt(int index) {
-        if (index >= 0 && index < history.size()) {
-            history.remove(index);
->>>>>>> MT-6
+        synchronized (lock) {
+            try (FileWriter writer = new FileWriter(HISTORY_FILE)) {
+                writer.write(history.toString(4));
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Error saving history to file: " + HISTORY_FILE, e);
+            }
         }
     }
 }
